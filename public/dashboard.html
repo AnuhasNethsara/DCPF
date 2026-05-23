@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard &bull; DCPF</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1F4E0;</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="scanlines"></div>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">DCPF</a>
+    <div class="nav-links">
+      <a href="#" id="viewProfileLink" class="nav-link" style="display:none;" target="_blank"><i class="fas fa-external-link-alt"></i> View Profile</a>
+      <button class="nav-btn-outline" onclick="signOut()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+    </div>
+  </nav>
+
+  <main class="dash-container" id="dashContainer" style="display:none;">
+    <div class="dash-header">
+      <h1><i class="fas fa-wand-magic-sparkles"></i> Dashboard</h1>
+      <p class="dash-url" id="dashUrl">Fill in the details below to create your cyberpunk profile page.</p>
+    </div>
+
+    <!-- Client Stats Overview -->
+    <div class="client-stats" id="clientStats">
+      <div class="client-stat-card">
+        <div class="client-stat-icon"><i class="fas fa-eye"></i></div>
+        <div class="client-stat-info">
+          <div class="client-stat-num" id="clientViews">0</div>
+          <div class="client-stat-label">Profile Views</div>
+        </div>
+      </div>
+      <div class="client-stat-card">
+        <div class="client-stat-icon purple"><i class="fas fa-link"></i></div>
+        <div class="client-stat-info">
+          <div class="client-stat-num" id="clientLinks">0</div>
+          <div class="client-stat-label">Social Links</div>
+        </div>
+      </div>
+      <div class="client-stat-card">
+        <div class="client-stat-icon pink"><i class="fas fa-music"></i></div>
+        <div class="client-stat-info">
+          <div class="client-stat-num" id="clientTracks">0</div>
+          <div class="client-stat-label">Tracks</div>
+        </div>
+      </div>
+      <div class="client-stat-card">
+        <div class="client-stat-icon green"><i class="fas fa-circle-check"></i></div>
+        <div class="client-stat-info">
+          <div class="client-stat-num" id="clientStatus">—</div>
+          <div class="client-stat-label">Status</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="dash-tabs">
+      <button class="dash-tab active" data-tab="editor" onclick="switchDashTab('editor')"><i class="fas fa-pen-to-square"></i> Edit Profile</button>
+      <button class="dash-tab" data-tab="analytics" onclick="switchDashTab('analytics')"><i class="fas fa-chart-line"></i> Analytics</button>
+    </div>
+
+    <!-- Analytics Tab -->
+    <div class="dash-tab-content" id="tab-analytics" style="display:none;">
+      <div class="analytics-panel">
+        <div class="analytics-card">
+          <div class="analytics-header">
+            <h3><i class="fas fa-eye"></i> Profile Views</h3>
+          </div>
+          <div class="analytics-big-num" id="analyticsViews">0</div>
+          <p class="analytics-desc">Total unique page loads since your profile was created.</p>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-header">
+            <h3><i class="fas fa-globe"></i> Profile URL</h3>
+          </div>
+          <div class="analytics-url-box">
+            <span id="analyticsUrl" class="analytics-url">—</span>
+            <button class="btn-copy" onclick="copyProfileUrl()"><i class="fas fa-copy"></i></button>
+          </div>
+          <p class="analytics-desc">Share this link anywhere to get more views.</p>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-header">
+            <h3><i class="fas fa-info-circle"></i> Profile Summary</h3>
+          </div>
+          <div class="analytics-summary">
+            <div class="summary-row"><span>Username</span><span id="summaryUsername">—</span></div>
+            <div class="summary-row"><span>Display Name</span><span id="summaryName">—</span></div>
+            <div class="summary-row"><span>Discord Connected</span><span id="summaryDiscord">—</span></div>
+            <div class="summary-row"><span>GitHub Connected</span><span id="summaryGithub">—</span></div>
+            <div class="summary-row"><span>Social Links</span><span id="summarySocials">0</span></div>
+            <div class="summary-row"><span>Music Tracks</span><span id="summaryTracks">0</span></div>
+            <div class="summary-row"><span>Background Video</span><span id="summaryVideo">—</span></div>
+            <div class="summary-row"><span>Last Updated</span><span id="summaryUpdated">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editor Tab -->
+    <div class="dash-tab-content" id="tab-editor">
+    <form id="profileForm" class="dash-form">
+      <!-- Username -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fas fa-at"></i> Username</h2>
+        <p class="section-desc">This will be your unique profile URL.</p>
+        <div class="field-row-with-btn">
+          <input type="text" id="usernameInput" placeholder="e.g. keng, darknight, cyberdev" pattern="^[a-z0-9_-]{3,20}$" required>
+          <button type="button" class="btn-small" id="checkUsernameBtn" onclick="checkUsername()"><i class="fas fa-check-circle"></i> Check</button>
+          <button type="button" class="btn-small btn-edit-username" id="editUsernameBtn" onclick="unlockUsername()" style="display:none;"><i class="fas fa-pen"></i> Change</button>
+        </div>
+        <p class="field-hint" id="usernameHint">3-20 characters &bull; lowercase letters, numbers, hyphens, underscores only</p>
+      </section>
+
+      <!-- Basic Info -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fas fa-user"></i> Basic Info</h2>
+        <p class="section-desc">Your display name, tagline, and location shown on the profile card.</p>
+        <input type="text" id="displayName" placeholder="Display Name (e.g. Anuhas Nethsara)" maxlength="40" required>
+        <input type="text" id="tagline" placeholder="&#x26A1; Short bio or tagline (e.g. Developer &bull; Designer &bull; Creator)" maxlength="120">
+        <div class="field-row">
+          <input type="text" id="country" placeholder="Country (e.g. Sri Lanka)">
+          <input type="text" id="countryFlag" placeholder="Flag image URL (optional)">
+        </div>
+        <input type="email" id="contactEmail" placeholder="Contact email (visitors can copy this)">
+      </section>
+
+      <!-- Discord -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fa-brands fa-discord"></i> Discord Integration</h2>
+        <p class="section-desc">Show your live Discord status, activity, and Spotify on your profile.</p>
+        <input type="text" id="discordId" placeholder="Your Discord User ID (18-digit number)">
+        <p class="field-hint warning-hint"><i class="fas fa-triangle-exclamation"></i> You must join the <a href="https://discord.gg/lanyard" target="_blank" rel="noopener">Lanyard Discord server</a> for live presence to work. Get your ID: User Settings &rarr; Advanced &rarr; Enable Developer Mode &rarr; Right-click yourself &rarr; Copy User ID.</p>
+      </section>
+
+      <!-- GitHub -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fa-brands fa-github"></i> GitHub Integration</h2>
+        <p class="section-desc">Auto-displays your repos, followers, and top languages.</p>
+        <input type="text" id="githubUser" placeholder="GitHub username (e.g. AnuhasNethsara)">
+      </section>
+
+      <!-- Social Links -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fas fa-link"></i> Social Links</h2>
+        <p class="section-desc">Add your social profiles. Only filled links will appear on your page.</p>
+        <div class="socials-inputs">
+          <div class="social-input-row">
+            <i class="fa-brands fa-discord"></i>
+            <input type="url" id="socialDiscord" placeholder="Discord profile URL">
+          </div>
+          <div class="social-input-row">
+            <i class="fa-brands fa-github"></i>
+            <input type="url" id="socialGithub" placeholder="GitHub profile URL">
+          </div>
+          <div class="social-input-row">
+            <i class="fa-brands fa-youtube"></i>
+            <input type="url" id="socialYoutube" placeholder="YouTube channel URL">
+          </div>
+          <div class="social-input-row">
+            <i class="fa-brands fa-tiktok"></i>
+            <input type="url" id="socialTiktok" placeholder="TikTok profile URL">
+          </div>
+          <div class="social-input-row">
+            <i class="fa-brands fa-instagram"></i>
+            <input type="url" id="socialInstagram" placeholder="Instagram URL">
+          </div>
+          <div class="social-input-row">
+            <i class="fa-brands fa-facebook"></i>
+            <input type="url" id="socialFacebook" placeholder="Facebook URL">
+          </div>
+          <div class="social-input-row">
+            <i class="fa-brands fa-spotify"></i>
+            <input type="url" id="socialSpotify" placeholder="Spotify profile URL">
+          </div>
+          <div class="social-input-row">
+            <i class="fa-brands fa-steam"></i>
+            <input type="url" id="socialSteam" placeholder="Steam profile URL">
+          </div>
+          <div class="social-input-row">
+            <i class="fa-brands fa-twitch"></i>
+            <input type="url" id="socialTwitch" placeholder="Twitch channel URL">
+          </div>
+          <div class="social-input-row">
+            <i class="fa-solid fa-globe"></i>
+            <input type="url" id="socialWebsite" placeholder="Personal website URL">
+          </div>
+        </div>
+      </section>
+
+      <!-- Games -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fas fa-gamepad"></i> Games I Play</h2>
+        <p class="section-desc">Show off the games you play. Add a name and optional icon URL.</p>
+        <div id="gamesContainer"></div>
+        <button type="button" class="btn-small" onclick="addGameRow()"><i class="fas fa-plus"></i> Add Game</button>
+      </section>
+
+      <!-- Music -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fas fa-music"></i> Music Player</h2>
+        <p class="section-desc">Add background tracks to your profile. Visitors can play/pause and skip.</p>
+        <p class="field-hint"><i class="fas fa-cloud-arrow-up"></i> Upload MP3 files directly (max 10MB) or paste a direct URL.</p>
+        <div id="tracksContainer"></div>
+        <button type="button" class="btn-small" onclick="addTrackRow()"><i class="fas fa-plus"></i> Add Track</button>
+      </section>
+
+      <!-- Theme -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fas fa-swatchbook"></i> Profile Template</h2>
+        <p class="section-desc">Choose a layout and style for your profile page. Each has a unique structure.</p>
+        <div class="template-grid" id="templateGrid">
+          <div class="template-option active" data-template="cyberpunk" onclick="selectTemplate('cyberpunk')">
+            <div class="template-preview tp-cyberpunk">
+              <div class="tp-mock-bento">
+                <div class="tp-m tp-m-wide"></div>
+                <div class="tp-m tp-m-tall"></div>
+                <div class="tp-m"></div>
+                <div class="tp-m"></div>
+                <div class="tp-m tp-m-full"></div>
+              </div>
+            </div>
+            <span class="template-name">Cyberpunk</span>
+            <span class="template-desc">Bento grid, neon glows, animated rings</span>
+          </div>
+          <div class="template-option" data-template="minimal" onclick="selectTemplate('minimal')">
+            <div class="template-preview tp-minimal">
+              <div class="tp-mock-stack">
+                <div class="tp-m tp-m-center"></div>
+                <div class="tp-m tp-m-line"></div>
+                <div class="tp-m tp-m-line short"></div>
+                <div class="tp-m tp-m-row"><div></div><div></div><div></div></div>
+              </div>
+            </div>
+            <span class="template-name">Minimal</span>
+            <span class="template-desc">Centered stack, clean & simple</span>
+          </div>
+          <div class="template-option" data-template="terminal" onclick="selectTemplate('terminal')">
+            <div class="template-preview tp-terminal">
+              <div class="tp-mock-term">
+                <div class="tp-term-bar"><span></span><span></span><span></span></div>
+                <div class="tp-m tp-m-line"></div>
+                <div class="tp-m tp-m-line short"></div>
+                <div class="tp-m tp-m-line"></div>
+              </div>
+            </div>
+            <span class="template-name">Terminal</span>
+            <span class="template-desc">Hacker console, monospace, retro</span>
+          </div>
+          <div class="template-option" data-template="glass" onclick="selectTemplate('glass')">
+            <div class="template-preview tp-glass">
+              <div class="tp-mock-glass">
+                <div class="tp-m tp-m-center"></div>
+                <div class="tp-m tp-m-row"><div></div><div></div></div>
+                <div class="tp-m tp-m-full"></div>
+              </div>
+            </div>
+            <span class="template-name">Glass</span>
+            <span class="template-desc">Frosted glass cards, soft blur</span>
+          </div>
+          <div class="template-option" data-template="neon" onclick="selectTemplate('neon')">
+            <div class="template-preview tp-neon">
+              <div class="tp-mock-bento">
+                <div class="tp-m tp-m-wide"></div>
+                <div class="tp-m"></div>
+                <div class="tp-m"></div>
+                <div class="tp-m tp-m-full"></div>
+              </div>
+            </div>
+            <span class="template-name">Neon</span>
+            <span class="template-desc">Bold borders, heavy glow, vibrant</span>
+          </div>
+          <div class="template-option" data-template="split" onclick="selectTemplate('split')">
+            <div class="template-preview tp-split">
+              <div class="tp-mock-split">
+                <div class="tp-split-left"><div class="tp-m tp-m-center"></div><div class="tp-m tp-m-line"></div></div>
+                <div class="tp-split-right"><div class="tp-m"></div><div class="tp-m"></div><div class="tp-m"></div></div>
+              </div>
+            </div>
+            <span class="template-name">Split</span>
+            <span class="template-desc">Fixed sidebar + scrollable content</span>
+          </div>
+          <div class="template-option" data-template="cards3d" onclick="selectTemplate('cards3d')">
+            <div class="template-preview tp-cards3d">
+              <div class="tp-mock-3d">
+                <div class="tp-m tp-m-tilt"></div>
+                <div class="tp-m tp-m-tilt"></div>
+                <div class="tp-m tp-m-tilt"></div>
+              </div>
+            </div>
+            <span class="template-name">3D Cards</span>
+            <span class="template-desc">Perspective tilt, floating depth</span>
+          </div>
+          <div class="template-option" data-template="orbit" onclick="selectTemplate('orbit')">
+            <div class="template-preview tp-orbit">
+              <div class="tp-mock-orbit">
+                <div class="tp-m tp-m-center"></div>
+                <div class="tp-orbit-ring"></div>
+              </div>
+            </div>
+            <span class="template-name">Orbit</span>
+            <span class="template-desc">Centered hero, radial card layout</span>
+          </div>
+        </div>
+        <input type="hidden" id="selectedTemplate" value="cyberpunk">
+      </section>
+
+      <!-- Theme Colors -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fas fa-palette"></i> Custom Colors</h2>
+        <p class="section-desc">Override the template colors with your own. Leave defaults to use the template's palette.</p>
+        <div class="color-row">
+          <label>Primary <input type="color" id="colorPrimary" value="#00f5ff"></label>
+          <label>Secondary <input type="color" id="colorSecondary" value="#a855f7"></label>
+          <label>Accent <input type="color" id="colorAccent" value="#f472b6"></label>
+        </div>
+      </section>
+
+      <!-- Background -->
+      <section class="form-section">
+        <h2 class="section-title"><i class="fas fa-video"></i> Background Video</h2>
+        <p class="section-desc">Add a looping background video behind your profile. Makes it look cinematic.</p>
+        <input type="url" id="bgVideoUrl" placeholder="https://example.com/yourvideo.mp4">
+        <div class="upload-row">
+          <input type="file" id="bgVideoFile" accept="video/mp4" onchange="uploadBgVideo(this)">
+          <span class="upload-status" id="bgVideoStatus"></span>
+        </div>
+        <p class="field-hint"><i class="fas fa-lightbulb"></i> Use a short, dark, ambient loop (5-15 seconds). Upload directly or paste a URL.</p>
+      </section>
+
+      <!-- Save -->
+      <div class="form-actions">
+        <button type="submit" class="btn-primary btn-full">
+          <i class="fas fa-rocket"></i> Save & Publish Profile
+        </button>
+      </div>
+
+      <p class="save-status" id="saveStatus"></p>
+    </form>
+    </div><!-- end tab-editor -->
+
+    <footer class="footer">
+      <p>Built by <a href="https://kengsl.indevs.in" target="_blank" rel="noopener">KenG SL</a> &bull; Powered by ShiftLK Network</p>
+    </footer>
+  </main>
+
+  <!-- Loading state -->
+  <div class="loading-state" id="loadingState">
+    <div class="loader"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

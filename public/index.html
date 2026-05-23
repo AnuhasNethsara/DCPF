@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DCPF &bull; Create Your Cyber Profile</title>
+  <meta name="description" content="Create your own cyberpunk Discord profile page. Free, fast, and beautiful.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1F4E0;</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="scanlines"></div>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">DCPF</a>
+    <div class="nav-links">
+      <a href="/dashboard.html" class="nav-link" id="navClientPortal" style="display:none;">Client Portal</a>
+      <a href="/admin.html" class="nav-link" id="navAdminDash" style="display:none;">Admin Dashboard</a>
+      <a href="/login.html" class="nav-btn" id="navAuthBtn">Sign In</a>
+    </div>
+  </nav>
+
+  <main class="hero">
+    <div class="hero-badge">FREE &bull; OPEN &bull; CYBERPUNK</div>
+    <h1 class="hero-title">Your Discord Profile,<br><span class="gradient-text">Reimagined.</span></h1>
+    <p class="hero-desc">Create a stunning cyberpunk profile page with live Discord presence, GitHub stats, music player, and social links. Takes 2 minutes.</p>
+    <div class="hero-actions">
+      <a href="/login.html" class="btn-primary">Create Your Profile</a>
+      <a href="https://discordprofile.kengsl.indevs.in/" class="btn-secondary" target="_blank" rel="noopener">See Demo</a>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <i class="fa-brands fa-discord"></i>
+        <h3>Live Discord Status</h3>
+        <p>Real-time presence, activity, and Spotify integration via Lanyard.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fa-brands fa-github"></i>
+        <h3>GitHub Integration</h3>
+        <p>Auto-fetch repos, followers, and top languages from your profile.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fa-solid fa-music"></i>
+        <h3>Music Player</h3>
+        <p>Upload your own background tracks with a vinyl-style player.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fa-solid fa-palette"></i>
+        <h3>Custom Themes</h3>
+        <p>Pick your accent colors and make the profile truly yours.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fa-solid fa-link"></i>
+        <h3>All Your Links</h3>
+        <p>Discord, YouTube, TikTok, Instagram, Steam, and more in one place.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fa-solid fa-bolt"></i>
+        <h3>Instant Deploy</h3>
+        <p>Your profile goes live immediately at your custom URL.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Built by <a href="https://kengsl.indevs.in" target="_blank" rel="noopener">KenG SL</a> &bull; Powered by ShiftLK Network</p>
+  </footer>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    firebase.auth().onAuthStateChanged(async (user) => {
+      const btn = document.getElementById('navAuthBtn');
+      const clientLink = document.getElementById('navClientPortal');
+      const adminLink = document.getElementById('navAdminDash');
+
+      if (user) {
+        btn.textContent = 'Sign Out';
+        btn.href = '#';
+        btn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut().then(() => location.reload()); };
+        clientLink.style.display = 'inline';
+
+        // Check if user is admin
+        try {
+          const doc = await firebase.firestore().collection('settings').doc('admin').get();
+          if (doc.exists && (doc.data().adminUids || []).includes(user.uid)) {
+            adminLink.style.display = 'inline';
+          }
+        } catch (e) {}
+      }
+    });
+  </script>
+</body>
+</html>

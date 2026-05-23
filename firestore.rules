@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: check if user is admin
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/settings/admin)
+        && request.auth.uid in get(/databases/$(database)/documents/settings/admin).data.adminUids;
+    }
+
+    // Usernames collection - maps username -> uid
+    match /usernames/{username} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid;
+      allow update: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null
+                    && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+
+    // User profiles
+    match /profiles/{uid} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+                            && request.auth.uid == uid;
+      allow delete: if request.auth != null
+                    && (request.auth.uid == uid || isAdmin());
+    }
+
+    // Visit counters (anyone can increment, admins can delete)
+    match /visits/{username} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Admin settings (only admins can read/write)
+    match /settings/{doc} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin();
+      // Allow first-time setup (when doc doesn't exist)
+      allow create: if request.auth != null;
+    }
+
+    // Users collection (tracks all registered users)
+    match /users/{uid} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

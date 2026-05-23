@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">Profile &bull; DCPF</title>
+  <meta name="description" id="pageMeta" content="A cyberpunk profile page powered by DCPF.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1F4E0;</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://ka-f.fontawesome.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <script data-cfasync="false" src="https://kit.fontawesome.com/0594833a1e.js" crossorigin="anonymous" defer></script>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body>
+
+  <div id="cursorDot"></div>
+  <div id="cursorRing"></div>
+
+  <div class="bg-fallback" id="bgFallback"></div>
+  <div class="bg-grid"></div>
+  <div class="scanlines"></div>
+  <div class="overlay"></div>
+  <video id="bgVideo" loop muted playsinline preload="none"></video>
+
+  <div id="enterOverlay">
+    <div class="enter-logo" id="enterName">Loading...</div>
+    <div class="enter-sub">Click to Enter</div>
+    <div class="enter-hint" id="enterHint"></div>
+  </div>
+
+  <div id="mainPage">
+    <div class="page">
+      <div class="bento-container">
+
+        <!-- Profile Card -->
+        <div class="bento-card bento-profile">
+          <div class="profile-left">
+            <div class="avatar-wrap">
+              <div class="ring1"></div>
+              <div class="ring2"></div>
+              <div class="avatar-inner">
+                <img id="topAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar">
+              </div>
+              <img id="topDeco" class="nitro-deco" src="" alt="" style="display:none;">
+            </div>
+          </div>
+          <div class="profile-right">
+            <div class="username-row">
+              <h1 class="username" id="profileName" data-text="">Loading...</h1>
+            </div>
+            <p class="tagline" id="profileTagline"></p>
+            <div class="location-badge" id="locationBadge" style="display:none;">
+              <div class="pulse-ring"></div>
+              <img class="lk-flag" id="flagImg" src="" alt="" width="22" height="14" loading="lazy">
+              <span class="location-text" id="locationText"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Discord Card -->
+        <div class="bento-card bento-discord" id="discordCard" style="display:none;">
+          <div class="discord-header">
+            <div class="discord-icon-wrap">
+              <i class="fa-brands fa-discord"></i>
+              <span>LIVE TELEMETRY</span>
+            </div>
+            <span id="dcStatusLabel" class="dc-status-label">offline</span>
+          </div>
+          <div class="dc-profile-row">
+            <div class="dc-avatar-wrap">
+              <img id="dcAvatar" class="dc-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Discord" width="58" height="58">
+              <div id="dcStatusDot" class="dc-status-dot" style="background:#80848e;"></div>
+            </div>
+            <div class="dc-user-details">
+              <div class="dc-name-row">
+                <span id="dcName" class="dc-name">Loading...</span>
+                <span id="dcTag" class="dc-tag" style="display:none;">
+                  <img id="dcTagIcon" src="" alt="" width="12" height="12">
+                  <span id="dcTagText"></span>
+                </span>
+              </div>
+              <div id="dcActivity" class="dc-activity">Fetching presence...</div>
+            </div>
+          </div>
+          <div id="dcRichPresence" class="dc-rich-presence" style="display:none;">
+            <div class="dc-rp-header" id="dcRpHeader">PLAYING A GAME</div>
+            <div class="dc-rp-body">
+              <div class="dc-rp-image-wrap">
+                <img id="dcRpImage" class="dc-rp-image" src="" alt="" width="58" height="58" loading="lazy">
+                <img id="dcRpSmallImage" class="dc-rp-small-image" src="" alt="" style="display:none;" width="22" height="22" loading="lazy">
+              </div>
+              <div class="dc-rp-details">
+                <div id="dcRpName" class="dc-rp-name"></div>
+                <div id="dcRpDetails" class="dc-rp-details-text"></div>
+                <div id="dcRpState" class="dc-rp-state"></div>
+              </div>
+            </div>
+            <div id="dcRpProgress" class="dc-rp-progress" style="display:none;">
+              <div class="dc-rp-bar"><div id="dcRpFill" class="dc-rp-fill"></div></div>
+              <div class="dc-rp-time-row">
+                <span id="dcRpTimeCur">0:00</span>
+                <span id="dcRpTimeTot">0:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GitHub Card -->
+        <div class="bento-card bento-github" id="githubCard" style="display:none;">
+          <div class="github-header">
+            <div class="github-icon-wrap">
+              <i class="fa-brands fa-github"></i>
+              <span>CODE REPOSITORY</span>
+            </div>
+          </div>
+          <div class="gh-profile-row">
+            <img id="ghAvatar" class="gh-avatar" src="" alt="GitHub" width="48" height="48" loading="lazy">
+            <div class="gh-user-details">
+              <div id="ghName" class="gh-name"></div>
+              <div id="ghLogin" class="gh-login"></div>
+            </div>
+          </div>
+          <div id="ghBio" class="gh-bio"></div>
+          <div class="gh-stats-grid">
+            <div class="gh-stat-box"><div id="ghRepos" class="gh-stat-num">&mdash;</div><div class="gh-stat-label">Repos</div></div>
+            <div class="gh-stat-box"><div id="ghFollowers" class="gh-stat-num">&mdash;</div><div class="gh-stat-label">Followers</div></div>
+            <div class="gh-stat-box"><div id="ghFollowing" class="gh-stat-num">&mdash;</div><div class="gh-stat-label">Following</div></div>
+          </div>
+          <div id="ghLangs" class="gh-langs-container"></div>
+        </div>
+
+        <!-- Audio Card -->
+        <div class="bento-card bento-audio" id="audioCard" style="display:none;">
+          <div class="audio-header">
+            <div class="audio-icon-wrap">
+              <i class="fa-solid fa-compact-disc"></i>
+              <span>CYBER DECK AUDIO</span>
+            </div>
+            <div class="visualizer-container" id="audioVisualizer">
+              <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+              <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+          </div>
+          <div class="audio-body">
+            <div class="vinyl-deck-wrap">
+              <div class="vinyl-glow"></div>
+              <img id="musicCover" class="rotating-vinyl" src="" alt="cover" width="82" height="82">
+              <div class="vinyl-center"></div>
+            </div>
+            <div class="audio-meta">
+              <div class="music-title" id="musicTitle">&mdash;</div>
+              <div class="music-artist" id="musicArtist">&mdash;</div>
+            </div>
+          </div>
+          <div class="audio-deck-controls">
+            <button class="audio-ctrl-btn" onclick="prevTrack()" aria-label="Previous"><i class="fas fa-step-backward"></i></button>
+            <button class="audio-ctrl-btn play-btn" id="playBtn" onclick="togglePlay()" aria-label="Play"><i class="fas fa-play"></i></button>
+            <button class="audio-ctrl-btn" onclick="nextTrack()" aria-label="Next"><i class="fas fa-step-forward"></i></button>
+          </div>
+          <div class="audio-progress-row">
+            <span class="audio-time" id="curTime">0:00</span>
+            <div class="audio-prog-bar" id="progBar"><div class="audio-prog-fill" id="progFill"></div></div>
+            <span class="audio-time" id="totTime">0:00</span>
+          </div>
+          <div class="audio-footer-row">
+            <div class="track-dots" id="trackDots"></div>
+            <div class="card-vol-control">
+              <i class="fas fa-volume-high" style="font-size:10px;"></i>
+              <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.5" aria-label="Volume">
+            </div>
+          </div>
+        </div>
+
+        <!-- Games Card -->
+        <div class="bento-card bento-games" id="gamesCard" style="display:none;">
+          <div class="games-header">
+            <div class="games-icon-wrap">
+              <i class="fa-solid fa-gamepad"></i>
+              <span>GAMES I PLAY</span>
+            </div>
+          </div>
+          <div class="games-grid" id="gamesGrid"></div>
+        </div>
+
+        <!-- Socials Card -->
+        <div class="bento-card bento-socials" id="socialsCard" style="display:none;">
+          <div class="socials-title-row">
+            <i class="fa-solid fa-link"></i>
+            <span>SECURE LINK CHANNELS</span>
+          </div>
+          <div class="socials-grid" id="socialsGrid"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="visit-counter">
+    <i class="fas fa-eye"></i>
+    <span id="visitCount">&mdash;</span>
+  </div>
+
+  <a href="https://dcpfgenerator.kengsl.indevs.in" target="_blank" rel="noopener" class="powered-badge">
+    <i class="fas fa-bolt"></i>
+    <span>Powered by <strong>DCPF</strong></span>
+  </a>
+
+  <!-- Email Modal -->
+  <div id="emailModal" class="modal-overlay" onclick="closeEmailModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeEmailModal()" aria-label="Close">&times;</button>
+      <div class="modal-icon"><i class="fa-regular fa-envelope"></i></div>
+      <h3 class="modal-title">Get in Touch</h3>
+      <p class="modal-desc">Copy the email address below to get in touch.</p>
+      <div class="modal-copy-box">
+        <span id="modalEmailText" class="modal-email-text"></span>
+        <button id="modalCopyBtn" class="modal-copy-btn" onclick="copyEmailFromModal()" aria-label="Copy email">
+          <i class="fa-regular fa-copy"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bgAudio" preload="none"></audio>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/profile.js"></script>
+</body>
+</html>

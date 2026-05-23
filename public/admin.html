@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel &bull; DCPF</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1F6E1;</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="scanlines"></div>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">DCPF</a>
+    <div class="nav-links">
+      <span class="nav-badge">ADMIN</span>
+      <button class="nav-btn-outline" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- Loading -->
+  <div class="loading-state" id="loadingState">
+    <div class="loader"></div>
+    <p>Verifying admin access...</p>
+  </div>
+
+  <!-- Access Denied -->
+  <div class="access-denied" id="accessDenied" style="display:none;">
+    <i class="fas fa-shield-halved"></i>
+    <h2>Access Denied</h2>
+    <p>You don't have admin privileges.</p>
+    <a href="/" class="btn-primary">Go Home</a>
+  </div>
+
+  <!-- Admin Content -->
+  <main class="admin-container" id="adminContainer" style="display:none;">
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-num" id="statUsers">0</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statProfiles">0</div>
+        <div class="stat-label">Published Profiles</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statVisits">0</div>
+        <div class="stat-label">Total Visits</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="tab active" data-tab="profiles" onclick="switchTab('profiles')">
+        <i class="fas fa-users"></i> Profiles
+      </button>
+      <button class="tab" data-tab="users" onclick="switchTab('users')">
+        <i class="fas fa-user-group"></i> All Users
+      </button>
+      <button class="tab" data-tab="settings" onclick="switchTab('settings')">
+        <i class="fas fa-gear"></i> Settings
+      </button>
+    </div>
+
+    <!-- Profiles Tab -->
+    <div class="tab-content active" id="tab-profiles">
+      <div class="panel-header">
+        <h2>All Profiles</h2>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Search by username or display name..." oninput="filterProfiles()">
+        </div>
+      </div>
+      <div class="profiles-table-wrap">
+        <table class="profiles-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Display Name</th>
+              <th>Email</th>
+              <th>Discord ID</th>
+              <th>Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="profilesBody"></tbody>
+        </table>
+      </div>
+      <p class="empty-state" id="emptyState" style="display:none;">No profiles found.</p>
+    </div>
+
+    <!-- Users Tab -->
+    <div class="tab-content" id="tab-users">
+      <div class="panel-header">
+        <h2>All Registered Users</h2>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="userSearchInput" placeholder="Search by email or name..." oninput="filterUsers()">
+        </div>
+      </div>
+      <div class="profiles-table-wrap">
+        <table class="profiles-table">
+          <thead>
+            <tr>
+              <th>UID</th>
+              <th>Email</th>
+              <th>Name</th>
+              <th>Signed Up</th>
+              <th>Last Login</th>
+              <th>Has Profile</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+      <p class="empty-state" id="usersEmpty" style="display:none;">No users found.</p>
+    </div>
+
+    <!-- Settings Tab -->
+    <div class="tab-content" id="tab-settings">
+      <div class="panel-header">
+        <h2>Platform Settings</h2>
+      </div>
+      <div class="settings-grid">
+        <div class="setting-card">
+          <h3><i class="fas fa-user-shield"></i> Admin Users</h3>
+          <p class="setting-desc">UIDs with admin access (one per line)</p>
+          <textarea id="adminUids" rows="4" placeholder="Paste Firebase UIDs here..."></textarea>
+          <button class="btn-small" onclick="saveSettings()"><i class="fas fa-save"></i> Save</button>
+        </div>
+        <div class="setting-card">
+          <h3><i class="fas fa-ban"></i> Banned Usernames</h3>
+          <p class="setting-desc">Reserved/blocked usernames (one per line)</p>
+          <textarea id="bannedUsernames" rows="4" placeholder="admin&#10;root&#10;system"></textarea>
+          <button class="btn-small" onclick="saveSettings()"><i class="fas fa-save"></i> Save</button>
+        </div>
+        <div class="setting-card">
+          <h3><i class="fas fa-bullhorn"></i> Site Announcement</h3>
+          <p class="setting-desc">Show a banner on the landing page (leave empty to hide)</p>
+          <input type="text" id="announcement" placeholder="e.g. We're in beta! Report bugs on Discord.">
+          <button class="btn-small" onclick="saveSettings()"><i class="fas fa-save"></i> Save</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal-overlay" onclick="closeDeleteModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+      <div class="modal-icon danger"><i class="fas fa-trash"></i></div>
+      <h3 class="modal-title">Delete Profile</h3>
+      <p class="modal-desc">Are you sure you want to delete <strong id="deleteUsername"></strong>? This cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
